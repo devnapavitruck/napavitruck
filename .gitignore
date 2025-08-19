@@ -1,0 +1,11 @@
+﻿**/node_modules/
+**/dist/
+**/.next/
+**/out/
+**/.expo/
+**/.expo-shared/
+coverage/
+.env
+.env.*.local
+npm-debug.log*
+*.log
