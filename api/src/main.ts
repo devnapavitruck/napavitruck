@@ -1,41 +1,33 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
-import helmet from 'helmet';
 import { ValidationPipe } from '@nestjs/common';
-import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
+import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
-  // Seguridad básica
-  app.use(helmet());
+  // CORS para frontend en :3001
   app.enableCors({
-    origin: '*', // ajústalo luego a tu dominio
-    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+    origin: ['http://localhost:3001'],
+    methods: ['GET', 'POST', 'PATCH', 'PUT', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization'],
   });
 
-  // Validación global DTOs
-  app.useGlobalPipes(
-    new ValidationPipe({
-      whitelist: true,       // elimina props extra
-      forbidNonWhitelisted: false,
-      transform: true,       // convierte tipos automáticamente
-    }),
-  );
+  app.setGlobalPrefix('api');
+  app.useGlobalPipes(new ValidationPipe({ whitelist: true, transform: true }));
 
-  // Swagger
   const config = new DocumentBuilder()
     .setTitle('NapaviTruck API')
-    .setDescription('Documentación de endpoints v1')
+    .setDescription('API NapaviTruck - auth RUT+PIN y SUPERADMIN empresas')
     .setVersion('1.0.0')
-    .addBearerAuth() // Authorization: Bearer <token>
+    .addBearerAuth()
     .build();
-  const document = SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup('docs', app, document);
+  const doc = SwaggerModule.createDocument(app, config);
+  SwaggerModule.setup('docs', app, doc);
 
-  const port = process.env.PORT ? Number(process.env.PORT) : 3000;
+  const port = Number(process.env.PORT) || 3000;
   await app.listen(port);
-  console.log(`API escuchando en http://localhost:${port}  |  Swagger: /docs`);
+  // eslint-disable-next-line no-console
+  console.log(`API escuchando en http://localhost:${port}`);
 }
 bootstrap();

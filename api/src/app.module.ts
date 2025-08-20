@@ -1,28 +1,24 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
+import { MongooseModule } from '@nestjs/mongoose';
+
 import { HealthModule } from './health/health.module';
 import { AuthModule } from './auth/auth.module';
-import { AuthController } from './auth.controller';
-import { UsuariosModule } from './usuarios/usuarios.module';
-import { UsuariosController } from './usuarios.controller';
+import { UsersModule } from './users/users.module';
 import { EmpresaModule } from './empresa/empresa.module';
-import { EmpresaController } from './empresa.controller';
-import { SuscripcionModule } from './suscripcion/suscripcion.module';
-import { SuscripcionController } from './suscripcion.controller';
+import { SeedModule } from './seed/seed.module';
 
 @Module({
   imports: [
-    // Carga variables desde .env y las expone en todo el proyecto
     ConfigModule.forRoot({ isGlobal: true }),
+    MongooseModule.forRoot(process.env.MONGO_URI as string, {
+      connectionName: 'primary',
+    }),
     HealthModule,
     AuthModule,
-    UsuariosModule,
+    UsersModule,
     EmpresaModule,
-    SuscripcionModule,
+    SeedModule,
   ],
-  controllers: [AppController, AuthController, UsuariosController, EmpresaController, SuscripcionController],
-  providers: [AppService],
 })
 export class AppModule {}
