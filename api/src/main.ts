@@ -2,19 +2,37 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import * as express from 'express';
+import { join } from 'path';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
-
-  // CORS para frontend en :3001
-  app.enableCors({
-    origin: ['http://localhost:3001'],
-    methods: ['GET', 'POST', 'PATCH', 'PUT', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization'],
-  });
-
   app.setGlobalPrefix('api');
   app.useGlobalPipes(new ValidationPipe({ whitelist: true, transform: true }));
+
+  // CORS: permite web local y lo que declares en .env (CORS_ORIGINS)
+  const allowed =
+    (process.env.CORS_ORIGINS ??
+      'http://localhost:3001,http://127.0.0.1:3001')
+      .split(',')
+      .map(s => s.trim())
+      .filter(Boolean);
+
+  app.enableCors({
+    origin(origin, cb) {
+      // permitir llamadas sin origen (Swagger/Postman/Expo)
+      if (!origin) return cb(null, true);
+      if (allowed.includes(origin)) return cb(null, true);
+      return cb(new Error(`Origin ${origin} not allowed by CORS`), false);
+    },
+    methods: ['GET', 'HEAD', 'PUT', 'PATCH', 'POST', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+    credentials: true,
+    optionsSuccessStatus: 204,
+  });
+
+  // Servir archivos estáticos (fotos y PDF)
+  app.use('/uploads', express.static(join(process.cwd(), 'uploads')));
 
   const config = new DocumentBuilder()
     .setTitle('NapaviTruck API')
@@ -25,9 +43,7 @@ async function bootstrap() {
   const doc = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('docs', app, doc);
 
-  const port = Number(process.env.PORT) || 3000;
-  await app.listen(port);
-  // eslint-disable-next-line no-console
-  console.log(`API escuchando en http://localhost:${port}`);
+  await app.listen(process.env.PORT || 3000);
+  console.log(`API escuchando en http://localhost:${process.env.PORT || 3000}`);
 }
 bootstrap();

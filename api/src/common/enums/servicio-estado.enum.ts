@@ -1,0 +1,36 @@
+export enum ServicioEstado {
+  PROGRAMADO = 'PROGRAMADO',
+  ACTIVADO = 'ACTIVADO',
+  EN_RUTA_A_ORIGEN = 'EN_RUTA_A_ORIGEN',
+  EN_PRESENTACION_CARGA = 'EN_PRESENTACION_CARGA',
+  CARGANDO = 'CARGANDO',
+  CARGA_COMPLETA = 'CARGA_COMPLETA',
+  EN_TRANSITO = 'EN_TRANSITO',
+  EN_PRESENTACION_INTERMEDIA = 'EN_PRESENTACION_INTERMEDIA',
+  OPERANDO_EN_INTERMEDIO = 'OPERANDO_EN_INTERMEDIO',
+  OPERACION_INTERMEDIA_COMPLETA = 'OPERACION_INTERMEDIA_COMPLETA',
+  EN_RUTA_A_DESTINO_FINAL = 'EN_RUTA_A_DESTINO_FINAL',
+  EN_PRESENTACION_DESCARGA = 'EN_PRESENTACION_DESCARGA',
+  DESCARGANDO = 'DESCARGANDO',
+  DESCARGA_COMPLETA = 'DESCARGA_COMPLETA',
+  FINALIZADO = 'FINALIZADO',
+}
+
+/** Etiquetas legibles para UI (opcional) */
+export const ServicioEstadoLabel: Record<ServicioEstado, string> = {
+  [ServicioEstado.PROGRAMADO]: 'Programado',
+  [ServicioEstado.ACTIVADO]: 'Activado',
+  [ServicioEstado.EN_RUTA_A_ORIGEN]: 'En ruta a origen',
+  [ServicioEstado.EN_PRESENTACION_CARGA]: 'En presentación (carga)',
+  [ServicioEstado.CARGANDO]: 'Cargando',
+  [ServicioEstado.CARGA_COMPLETA]: 'Carga completa',
+  [ServicioEstado.EN_TRANSITO]: 'En tránsito',
+  [ServicioEstado.EN_PRESENTACION_INTERMEDIA]: 'En presentación (intermedia)',
+  [ServicioEstado.OPERANDO_EN_INTERMEDIO]: 'Operando en intermedio',
+  [ServicioEstado.OPERACION_INTERMEDIA_COMPLETA]: 'Operación intermedia completa',
+  [ServicioEstado.EN_RUTA_A_DESTINO_FINAL]: 'En ruta a destino final',
+  [ServicioEstado.EN_PRESENTACION_DESCARGA]: 'En presentación (descarga)',
+  [ServicioEstado.DESCARGANDO]: 'Descargando',
+  [ServicioEstado.DESCARGA_COMPLETA]: 'Descarga completa',
+  [ServicioEstado.FINALIZADO]: 'Finalizado',
+};

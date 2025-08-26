@@ -1,0 +1,76 @@
+{
+  "semirremolques": [
+    { "id": "PORTA_CONT_20", "nombre": "Porta contenedor 20'" },
+    { "id": "PORTA_CONT_40", "nombre": "Porta contenedor 40'" },
+    { "id": "RAMPLA_PLANA", "nombre": "Rampla plana" },
+    { "id": "RAMPLA_CUELLO_CISNE", "nombre": "Rampla cuello cisne" },
+    { "id": "RAMPLA_SIDER", "nombre": "Rampla Sider-Encarpada" },
+    { "id": "REFRIGERADO", "nombre": "Refrigerado" },
+    { "id": "SILO", "nombre": "Silo / Granelero" },
+    { "id": "CAMA_BAJA_3E", "nombre": "Cama Baja 3 ejes" },
+    { "id": "CAMA_BAJA_4E", "nombre": "Cama Baja 4 ejes" },
+    { "id": "EXTENSIBLE", "nombre": "Rampla extensible" },
+    { "id": "ROTAINER", "nombre": "Rotainer" },
+    { "id": "OTRO", "nombre": "Otro tipo de semi" }
+  ],
+  "cargas": [
+    { "id": "CONT_20_STD", "nombre": "Contenedor 20' estándar", "unidad": "UNIDAD", "reqContenedor": true },
+    { "id": "CONT_20_HC",  "nombre": "Contenedor 20' HighCube", "unidad": "UNIDAD", "reqContenedor": true },
+    { "id": "CONT_40_STD", "nombre": "Contenedor 40' estándar", "unidad": "UNIDAD", "reqContenedor": true },
+    { "id": "CONT_40_HC",  "nombre": "Contenedor 40' HighCube", "unidad": "UNIDAD", "reqContenedor": true },
+
+    { "id": "CONT_2X20",   "nombre": "Contenedores 2×20", "unidad": "UNIDAD", "reqContenedor": true },
+
+    { "id": "PALETIZADA", "nombre": "Paletizada", "unidad": "UNIDAD" },
+    { "id": "DESCONSOLIDADA", "nombre": "Desconsolidada", "unidad": "UNIDAD" },
+
+    { "id": "GRANEL_ARIDOS", "nombre": "Granel: Áridos", "unidad": "TONELADAS" },
+    { "id": "GRANEL_CEREAL", "nombre": "Granel: Cereales", "unidad": "TONELADAS" },
+
+    { "id": "LIQ_DIESEL", "nombre": "Líquido: Diésel", "unidad": "LITROS" },
+    { "id": "LIQ_GASOLINA", "nombre": "Líquido: Gasolina", "unidad": "LITROS" },
+
+    { "id": "REF_VERDURAS", "nombre": "Refrigerado: Verduras", "unidad": "UNIDAD" },
+    { "id": "REF_FRUTAS", "nombre": "Refrigerado: Frutas", "unidad": "UNIDAD" },
+    { "id": "REF_CARNICOS", "nombre": "Refrigerado: Cárnicos", "unidad": "UNIDAD" },
+    { "id": "REF_LACTEOS", "nombre": "Refrigerado: Lácteos", "unidad": "UNIDAD" },
+    { "id": "REF_CONGELADOS", "nombre": "Refrigerado: Congelados", "unidad": "UNIDAD" },
+
+    { "id": "ROT_ROTAINER", "nombre": "Rotainer", "unidad": "UNIDAD", "reqContenedor": true, "reqRotainer": true },
+
+    { "id": "OTRA_CARGA", "nombre": "Otra carga", "unidad": "UNIDAD" }
+  ],
+  "relaciones": [
+    { "semiId": "PORTA_CONT_20", "cargaId": "CONT_20_STD" },
+    { "semiId": "PORTA_CONT_20", "cargaId": "CONT_20_HC" },
+    { "semiId": "PORTA_CONT_40", "cargaId": "CONT_40_STD" },
+    { "semiId": "PORTA_CONT_40", "cargaId": "CONT_40_HC" },
+
+    { "semiId": "RAMPLA_PLANA", "cargaId": "CONT_20_STD", "maxContenedores": 2 },
+    { "semiId": "RAMPLA_PLANA", "cargaId": "CONT_20_HC",  "maxContenedores": 2 },
+    { "semiId": "RAMPLA_PLANA", "cargaId": "CONT_2X20",   "maxContenedores": 2 },
+
+    { "semiId": "RAMPLA_PLANA", "cargaId": "PALETIZADA" },
+    { "semiId": "RAMPLA_PLANA", "cargaId": "DESCONSOLIDADA" },
+
+    { "semiId": "RAMPLA_SIDER", "cargaId": "PALETIZADA" },
+    { "semiId": "RAMPLA_SIDER", "cargaId": "DESCONSOLIDADA" },
+
+    { "semiId": "SILO", "cargaId": "GRANEL_ARIDOS" },
+    { "semiId": "SILO", "cargaId": "GRANEL_CEREAL" },
+
+    { "semiId": "REFRIGERADO", "cargaId": "REF_VERDURAS" },
+    { "semiId": "REFRIGERADO", "cargaId": "REF_FRUTAS" },
+    { "semiId": "REFRIGERADO", "cargaId": "REF_CARNICOS" },
+    { "semiId": "REFRIGERADO", "cargaId": "REF_LACTEOS" },
+    { "semiId": "REFRIGERADO", "cargaId": "REF_CONGELADOS" },
+
+    { "semiId": "ROTAINER", "cargaId": "ROT_ROTAINER", "maxContenedores": 2 },
+
+    { "semiId": "EXTENSIBLE", "cargaId": "PALETIZADA" },
+    { "semiId": "CAMA_BAJA_3E", "cargaId": "PALETIZADA" },
+    { "semiId": "CAMA_BAJA_4E", "cargaId": "PALETIZADA" },
+
+    { "semiId": "OTRO", "cargaId": "OTRA_CARGA" }
+  ]
+}

@@ -1,0 +1,8 @@
+[
+  { "id": "SIN_NOVEDAD", "nombre": "Sin novedad" },
+  { "id": "RETRASO", "nombre": "Retraso en acceso", "severidad": "BAJA" },
+  { "id": "DANIO_CARGA", "nombre": "Daño en la carga", "severidad": "ALTA" },
+  { "id": "DANIO_EQUIPO", "nombre": "Daño en el equipo", "severidad": "MEDIA" },
+  { "id": "PROBLEMA_DOC", "nombre": "Problema documental", "severidad": "MEDIA" },
+  { "id": "OTRO", "nombre": "Otro" }
+]

@@ -2,21 +2,26 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document, Types } from 'mongoose';
 import { Rol } from '../../common/enums/rol.enum';
 
-@Schema({ timestamps: true })
+@Schema({ timestamps: true, collection: 'usuarios' })
 export class Usuario extends Document {
-  @Prop({ required: true, unique: true }) // guardamos rut normalizado (sin puntos/guión)
+  // Guardamos RUT normalizado (sin puntos ni guión)
+  @Prop({ required: true, trim: true })
   rut!: string;
 
   @Prop({ required: true })
   pinHash!: string;
 
-  @Prop() nombre?: string;
-  @Prop() apellido?: string;
+  @Prop({ trim: true })
+  nombre?: string;
 
-  @Prop({ lowercase: true, trim: true, index: true, sparse: true, unique: false })
+  @Prop({ trim: true })
+  apellido?: string;
+
+  @Prop({ lowercase: true, trim: true, index: true, sparse: true })
   email?: string;
 
-  @Prop() fono?: string;
+  @Prop({ trim: true })
+  fono?: string;
 
   @Prop({ required: true, enum: Object.values(Rol) })
   rol!: Rol;
@@ -37,5 +42,9 @@ export class Usuario extends Document {
   suspendido?: { motivo?: string; fecha?: Date };
 }
 
+export type UsuarioDocument = Usuario & Document;
 export const UsuarioSchema = SchemaFactory.createForClass(Usuario);
-UsuarioSchema.index({ rut: 1 }, { unique: true });
+
+// ---- Índices (deja SOLO estos; no pongas unique también en @Prop) ----
+UsuarioSchema.index({ rut: 1 }, { unique: true, name: 'idx_unique_rut' });
+UsuarioSchema.index({ rol: 1, empresaId: 1 }, { name: 'idx_rol_empresa' });

@@ -1,21 +1,21 @@
-import { IsEmail, IsNotEmpty, IsOptional, IsPhoneNumber, IsString, Length } from 'class-validator';
+import { IsEmail, IsMongoId, IsOptional, IsString, Matches } from 'class-validator';
 
 export class CreateAdminDto {
-  @IsString() @IsNotEmpty()
-  rut!: string;
+  @IsMongoId()
+  empresaId!: string;
 
-  @IsString() @Length(6, 6)
-  pin!: string;
-
-  @IsString() @IsNotEmpty()
-  nombre!: string;
-
-  @IsString() @IsNotEmpty()
-  apellido!: string;
+  @IsString() rut!: string;
+  @IsString() nombre!: string;
+  @IsString() apellido!: string;
 
   @IsEmail()
   email!: string;
 
   @IsOptional() @IsString()
   fono?: string;
+
+  // PIN manual (6 dígitos, no "000000" ni "123456")
+  @Matches(/^\d{6}$/, { message: 'PIN debe tener 6 dígitos' })
+  @Matches(/^(?!000000)(?!123456)\d{6}$/, { message: 'PIN no puede ser trivial (000000/123456)' })
+  pin!: string;
 }
