@@ -6,11 +6,13 @@ import { Servicio, ServicioSchema } from './schemas/servicio.schema';
 import { CatalogosModule } from '../catalogos/catalogos.module';
 import { Usuario, UsuarioSchema } from '../users/schemas/usuario.schema';
 import { IncidentesModule } from '../incidentes/incidentes.module';
+import { ReportsModule } from '../reports/reports.module';
 
 @Module({
   imports: [
     CatalogosModule,
     IncidentesModule,
+    ReportsModule,
     MongooseModule.forFeature([
       { name: Servicio.name, schema: ServicioSchema },
       { name: Usuario.name, schema: UsuarioSchema },

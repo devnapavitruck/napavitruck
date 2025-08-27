@@ -1,5 +1,6 @@
 import type { Express } from 'express';
 import { BadRequestException, ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
+import { ReportService } from '../reports/report.service';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, PipelineStage, Types } from 'mongoose';
 import { CatalogosService } from '../catalogos/catalogos.service';
@@ -20,6 +21,8 @@ export class ServiciosService {
     @InjectModel(Servicio.name) private readonly servicioModel: Model<ServicioDocument>,
     @InjectModel(Usuario.name) private readonly usuarioModel: Model<UsuarioDocument>,
     private readonly catalogos: CatalogosService,
+    private readonly reportService: ReportService,
+
   ) {}
 
   private contRegex = /^[A-Z]{3,4}[0-9]{6,7}$/;
@@ -439,32 +442,50 @@ export class ServiciosService {
   }
 
   async finalizarYGenerarPdf(servicioId: string, conductorUserId: string) {
-    const serv = await this.servicioModel.findById(servicioId);
-    if (!serv) throw new NotFoundException('Servicio no encontrado');
-    if (!serv.conductorId || String(serv.conductorId) !== conductorUserId) {
-      throw new ForbiddenException('No autorizado');
-    }
-    if (!serv.operacion || serv.operacion.length === 0) {
-      throw new BadRequestException('Operación no configurada');
-    }
+  const serv = await this.servicioModel.findById(servicioId);
+  if (!serv) throw new NotFoundException('Servicio no encontrado');
+  if (!serv.conductorId || String(serv.conductorId) !== conductorUserId) {
+    throw new ForbiddenException('No autorizado');
+  }
+  if (!serv.operacion || serv.operacion.length === 0) {
+    throw new BadRequestException('Operación no configurada');
+  }
 
-    // Validaciones mínimas por documento:
-    // - CARGA: al menos 1 foto de guía y marcas presentacion/inicio/termino
-    const idxCarga = serv.operacion.findIndex(p => p.tipo === 'CARGA');
-    if (idxCarga < 0) throw new BadRequestException('Falta punto de CARGA');
-    const pc = serv.operacion[idxCarga];
-    if (!pc.fotosGuia || pc.fotosGuia.length < 1) throw new BadRequestException('Debe adjuntar al menos una foto de la guía en CARGA');
-    if (!pc.marcas?.presentacion || !pc.marcas?.inicio || !pc.marcas?.termino) {
-      throw new BadRequestException('Faltan marcas de tiempo en punto de CARGA');
-    }
+  // Validaciones mínimas para finalizar:
+  const idxCarga = serv.operacion.findIndex(p => p.tipo === 'CARGA');
+  const idxDesc  = serv.operacion.findIndex(p => p.tipo === 'DESCARGA');
+  if (idxCarga < 0 || idxDesc < 0) {
+    throw new BadRequestException('Faltan puntos de CARGA/DESCARGA');
+  }
 
-    // Generar PDF
-    const pdfRel = await this.generarPdf(serv);
-    serv.reportPdfPath = pdfRel;
-    serv.estadoOperativo = 'FINALIZADO';
-    await serv.save();
+  const pCarga = serv.operacion[idxCarga];
+  const pDesc  = serv.operacion[idxDesc];
 
-    return { ok: true, pdf: pdfRel, estadoOperativo: serv.estadoOperativo };
+  const marcasOk = (p: any) => !!(p?.marcas?.presentacion && p?.marcas?.inicio && p?.marcas?.termino);
+  if (!marcasOk(pCarga)) throw new BadRequestException('Faltan marcas de tiempo en punto de CARGA');
+  if (!marcasOk(pDesc))  throw new BadRequestException('Faltan marcas de tiempo en punto de DESCARGA');
+
+  // Guía firmada OBLIGATORIA en DESCARGA
+  if (!pDesc.fotosGuia || pDesc.fotosGuia.length < 1) {
+    throw new BadRequestException('Debe adjuntar al menos una foto de la guía firmada en DESCARGA');
+  }
+
+  // Datos mínimos del conductor para el informe
+  let conductorLite: { rut?: string; nombre?: string; apellido?: string; fono?: string } | null = null;
+  if (serv.conductorId) {
+    const c = await this.usuarioModel.findById(serv.conductorId).lean();
+    if (c) conductorLite = { rut: c.rut, nombre: c.nombre, apellido: c.apellido, fono: c.fono };
+  }
+
+  // Generar PDF pro (Puppeteer)
+  const plain = (typeof (serv as any).toObject === 'function') ? (serv as any).toObject() : serv;
+  const pdfRel = await this.reportService.generateServicioPdf(plain, conductorLite);
+
+  serv.reportPdfPath = pdfRel;
+  serv.estadoOperativo = 'FINALIZADO';
+  await serv.save();
+
+  return { ok: true, pdf: pdfRel, estadoOperativo: serv.estadoOperativo };
   }
 
   private async generarPdf(serv: ServicioDocument): Promise<string> {
